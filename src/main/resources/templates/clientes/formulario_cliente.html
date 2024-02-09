@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head(title='Formulario de Cliente')" ></head>
+
+<body>
+	<nav th:replace="fragments/navbar :: nav_bar"></nav>
+	
+    <h1 class="col-lg-8 col-md-8 col-sm-8 container justify-content-center text_color">Formulario de Cliente</h1>
+    <div class="col-lg-8 col-md-8 col-sm-8 container justify-content-center card">
+	    <div th:if="${message != null}" class="alert alert-success alert-dismissible fade show" role="alert">
+		  <span th:text="${message}"></span>
+		  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+		    <span aria-hidden="true">&times;</span>
+		  </button>
+		</div>
+		<div th:if="${error != null}" class="alert alert-danger alert-dismissible fade show" role="alert">
+		  <span th:text="${error}"></span>
+		  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+		    <span aria-hidden="true">&times;</span>
+		  </button>
+		 </div>
+	    <div class="card-body">
+		    <form th:object="${cliente}" th:action="@{/clientes/guardar}" method="post">
+		        <input type="hidden" th:field="*{cliente_id}" required/>
+		        <div class="form-group mb-3">
+                   <label for="tipoCliente">Tipo de cliente : </label>
+                   <select name="tipoCliente" class="form-control" th:field="*{tipo_cliente}" id="tipoCliente" required>
+                   	<option value=""></option>
+                       <option th:each="tc : ${tiposClientes}" th:value="${tc.tipo_cliente_id}" th:text="${tc.nombre}"></option>
+                   </select>
+               	</div>
+		        <div class="form-group mb-3">
+		           <label for="nit">Nit : </label>
+		           <input type="text" name="nit" th:field="*{nit}" class="form-control" required />
+		       	</div>
+		       	<div class="form-group mb-3" id="razonSocialDiv">
+		        	<label for="razon_social">Razon Social:</label>
+			        <input type="text" th:field="*{razonSocial}" />
+		        </div>
+		       	<div class="form-group mb-3" id="nombresDiv">
+		        	<label for="nombres">Nombres:</label>
+			        <input type="text" th:field="*{nombres}" />
+		        </div>
+		        <div class="form-group mb-3" id="apellidosDiv">
+			        <label for="apellidos">Apellidos:</label>
+			        <input type="text" th:field="*{apellidos}" />
+			    </div>
+		        <div class="form-group mb-3">
+		           <label for="direccion">Direccion : </label>
+		           <input type="text" name="direccion" th:field="*{direccion}" class="form-control" required />
+		       	</div>
+		       	<div class="form-group mb-3">
+		           <label for="telefono">Telefono : </label>
+		           <input type="tel" name="telefono" th:field="*{telefono}" class="form-control" required />
+		       	</div>
+		       	<div class="form-group mb-3">
+		           <label for="email">Email : </label>
+		           <input type="email" name="email" th:field="*{email}" class="form-control" autocomplete="off" required />
+		       	</div>
+		       	
+               	<div class="form-group mb-3">
+                   <label for="cond_pago">Condicion de pago : </label>
+                   <select class="form-control" id="cond_pago" th:field="*{cond_pago}" required>
+                   	<option value=""></option>
+                       <option th:each="cp : ${condicionesPago}" th:value="${cp.cond_pago_id}" th:text="${cp.nombre}"></option>
+                   </select>
+               	</div>
+               	<div id="contactosContainer">
+                <!-- Campos de contacto -->
+	               	<th:block th:each="contacto, contactoStat : ${cliente.contactos}">
+				        <div th:id="|contactoSection_${contactoStat.index + 1}|">
+				            <div>
+				                <h2>Datos contacto</h2>
+				            </div>
+				            <div class="form-group mb-3">
+				                <label> Nombres:
+				                	<input type="text" th:field="*{contactos[__${contactoStat.index}__].nombres}" class="form-control" required />
+				                </label>
+				                
+				            </div>
+				            <div class="form-group mb-3">
+				                <label>Apellidos: 
+					                <input type="text" th:field="*{contactos[__${contactoStat.index}__].apellidos}" class="form-control" required />
+				                </label>
+				            </div>
+				            <div class="form-group mb-3">
+				                <label>Telefono:
+					                <input type="tel" th:field="*{contactos[__${contactoStat.index}__].telefono}" class="form-control" required />
+				                </label>
+				            </div>
+				            <div class="form-group mb-3">
+				                <label>Email: 
+					                <input type="email" th:field="*{contactos[__${contactoStat.index}__].email}" class="form-control" autocomplete="off" required />
+				                </label>
+				            </div>
+				        </div>
+				    </th:block>
+                </div>
+                <div class="row mb-5">
+	                <a class="btn btn-primary" onclick="agregarContacto()" role="button">A&ntilde;adir contacto</a>
+                </div>
+		        <button type="submit" class="btn btn-primary" >Guardar</button>
+		        <a class="btn btn-secondary" th:href="@{/clientes/listar}" role="button">Volver al Listado</a>
+		    </form>
+		</div>
+	</div>
+	<footer th:insert="fragments/footer :: footer"></footer>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+	<script type="text/javascript">
+		document.addEventListener("DOMContentLoaded", function() {
+		    // Ocultar los campos al cargar la p�gina
+		    let nombresDiv = document.getElementById("nombresDiv")
+		    let apellidosDiv = document.getElementById("apellidosDiv")
+			let razonSocialDiv = document.getElementById("razonSocialDiv")
+		    nombresDiv.style.display = "none"
+		    apellidosDiv.style.display = "none"
+	
+		    // Detectar cambios en el campo "Tipo de cliente"
+		    let tipoCliente = document.getElementById("tipoCliente")
+		    function actualizarCampos() {
+		    	console.log(tipoCliente.value)
+		        if (tipoCliente.value == 2) {
+		        	console.log("Persona juridica")
+		            nombresDiv.style.display = "none"
+		            apellidosDiv.style.display = "none"
+	            	razonSocialDiv.style.display = "block"
+		        } else {
+		        	console.log("Persona natural")
+		            nombresDiv.style.display = "block"
+		            apellidosDiv.style.display = "block"
+	            	razonSocialDiv.style.display = "none"
+		        }
+		    }
+		    tipoCliente.addEventListener("change", actualizarCampos)
+		    
+		    actualizarCampos()
+		});
+		var contactoIndex=1
+		function agregarContacto() {
+			contactoIndex++
+	        let contactoSection = document.getElementById("contactoSection");
+	        
+	        let contactosContainer = document.getElementById("contactosContainer");
+	        let elementosContactoSection = contactosContainer.querySelectorAll('[id^="contactoSection_"]');
+	        contactoIndex = elementosContactoSection.length
+	        let contactoHtml = `
+	        	<div id="contactoSection_${contactoIndex}">
+	              	<div>
+	              		<h2>Datos contacto</h2>
+	              	</div>
+	              	<div class="form-group mb-3">
+		                <label> Nombres:
+		                	<input type="text" name="contactos[${contactoIndex}].nombres" class="form-control" required />
+		                </label>
+		                
+		            </div>
+		            <div class="form-group mb-3">
+		                <label>Apellidos: 
+			                <input type="text" name="contactos[${contactoIndex}].apellidos" class="form-control" required />
+		                </label>
+		            </div>
+		            <div class="form-group mb-3">
+		                <label>Telefono:
+			                <input type="tel" name="contactos[${contactoIndex}].telefono" class="form-control" required />
+		                </label>
+		            </div>
+		            <div class="form-group mb-3">
+		                <label>Email: 
+			                <input type="email" name="contactos[${contactoIndex}].email" class="form-control" autocomplete="off" required />
+		                </label>
+		            </div>
+	           </div>
+	        `
+	        
+        	contactosContainer.insertAdjacentHTML('beforeend', contactoHtml);
+	    }
+	</script>
+</body>
+</html>

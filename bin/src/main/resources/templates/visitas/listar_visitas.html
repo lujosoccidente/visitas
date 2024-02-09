@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+	<head th:replace="fragments/head :: head(title='Listar Visitas')" ></head>
+	<body>
+		<nav th:replace="fragments/navbar :: nav_bar"></nav>
+		
+	    <div class="container">
+		    <div th:if="${message != null}" class="alert alert-success alert-dismissible fade show" role="alert">
+			  <span th:text="${message}"></span>
+			  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+			    <span aria-hidden="true">&times;</span>
+			  </button>
+			</div>
+			<div th:if="${error != null}" class="alert alert-danger alert-dismissible fade show" role="alert">
+			  <span th:text="${error}"></span>
+			  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+			    <span aria-hidden="true">&times;</span>
+			  </button>
+			 </div>
+		    <h1>Listado de Visitas</h1>
+		    <a class="btn btn-primary mb-4" th:href="@{/visitas/nueva}" role="button">Nueva Visita</a>
+		    <div class="table-responsive text-nowrap">
+				<table class="table table-striped align-middle table-hover table-bordered" aria-describedby="table-description">
+			        <tr>
+			            <th>Fecha</th>
+			            <th>Cliente</th>
+			            <th>Ubicacion</th>
+			            <th></th>
+			        </tr>
+			        <tr th:each="visita : ${visitas}">
+			            <td th:text="${visita.fecha_visita}"></td>
+			            <td th:text="${visita.cliente.razon_social}"></td>
+			            <td th:text="${visita.ubicacion}"></td>
+			            <td>
+			                <!-- <a class="btn btn-primary" th:href="@{/visitas/editar/{id}(id=${visita.visita_id})}" role="button">Editar</a> -->
+			                <a class="btn btn-danger" href="#" role="button" onclick="confirmModal(this)" th:data-visita-id="${visita.visita_id}">Eliminar</a>
+			            </td>
+			        </tr>
+		    	</table>
+		    </div>
+	    </div>
+	    <footer th:insert="fragments/footer :: footer"></footer>
+	    <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="confirmModal" aria-hidden="true" id="modal">
+	        <div class="modal-dialog">
+	            <div class="modal-content">
+	                <div class="modal-header">
+	                    <h5 class="modal-title" id="confirmModal">Advertencia</h5>
+	                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+	                </div>
+	                <div class="modal-confirm-body px-5">
+	                </div>
+	                <div class="modal-footer ">
+	                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+	                    <button type="button" class="btn btn-danger" onclick="eliminarVisita()" >Eliminar</button>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+		<script type="text/javascript">
+			var id_visita_eliminar;
+			function confirmModal(button) {
+				const visitaId = button.getAttribute("data-visita-id")
+				id_visita_eliminar = visitaId
+				const confirm_modal = new bootstrap.Modal('#modal', {
+					  keyboard: false
+					})
+				const confirm_modal_body = confirm_modal._element.querySelector(".modal-confirm-body")
+				confirm_modal_body.textContent = "Esta seguro que desea eliminar esta visita"
+				confirm_modal.show()
+				
+			}
+			
+			function eliminarVisita(){
+				console.log(id_visita_eliminar)
+				const id = parseInt(id_visita_eliminar)
+				if (isNaN(id)) {
+			        console.error('El ID del cliente no es un número válido.');
+			        return;
+			    }
+				const urlEliminar = `http://localhost:8090/visitas/eliminar/${id}`
+				console.log(urlEliminar)
+				fetch(urlEliminar, {
+		            method: 'DELETE'
+		        })
+		        .then(response => {
+		        	console.log(response)
+		            if (response.ok) {
+		                window.location.href = '/visitas/listar';
+		            } else {
+		                console.error('Error al eliminar la visita');
+		            }
+		        })
+		        .catch(error => {
+		            console.error('Error al eliminar la visita:', error);
+		        });
+			}
+		</script>
+	</body>
+</html>

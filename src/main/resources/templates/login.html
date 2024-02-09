@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+	  xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Login | Lujos de Occidente</title>
+<link th:href="@{/css/style.css}" rel="stylesheet">
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+	rel="stylesheet"
+	integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+	crossorigin="anonymous">
+	<link rel="shortcut icon" th:href="@{/img/favicon-logo-2019.png}" type="image/x-icon">
+</head>
+<body>
+
+	<div class="container my-5">
+		<div class="row justify-content-md-center">
+			<div class="col-md-4 col-md-offset-3 my-5">
+		        <h2 class="form-signin-heading">Iniciar sesion</h2>
+			      <form class="form-signin" method="post" action="/login">
+			      	<div th:if=${param.error}>
+			      		<div class="alert alert-danger">Usuario o contraseña invalidos</div>
+			      	</div>
+			        <p>
+			          <label for="username" class="sr-only">Nombre de usuario</label>
+			          <input type="text" id="username" name="username" class="form-control" placeholder="Username" required autofocus>
+			        </p>
+			        <p>
+			          <label for="password" class="sr-only">Contraseña</label>
+			          <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
+			        </p>
+			        <button class="btn btn-lg btn-primary btn-block" type="submit">Iniciar sesion</button>
+			      </form>
+			
+			</div>
+		</div>
+</div>
+<div class="container justify-content-center col-lg-5 col-md-5 col-sm-5 mt-5">
+		<footer class="text-center text_color_black">
+		        <p>Powered by: <a href="https://www.integrapps.com/">INTEGRAPPS</a></p>
+		    </footer>
+	</div>
+
+</body>
+</html>
